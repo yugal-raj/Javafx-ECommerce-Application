@@ -1,18 +1,14 @@
 package com.example.ecommerce;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -28,12 +24,6 @@ public class ProductList {
 
         TableColumn id = new TableColumn("Id")/*name = new TableColumn("Name"), price = new TableColumn("Price")*/;
         id.setCellValueFactory(new PropertyValueFactory<>("id"));
-//        name.setCellValueFactory(new PropertyValueFactory<>("name"));
-//        price.setCellValueFactory(new PropertyValueFactory<>("price"));
-
-
-
-        ObservableList<Product> data = FXCollections.observableArrayList();
 
 
         ObservableList<Product> productList = Product.getAllProducts(searchText, page);
@@ -47,7 +37,7 @@ public class ProductList {
         while(i < productTable.getItems().size()){
             GridPane gp = new GridPane();
             Product p = productTable.getItems().get(i);
-            InputStream stream = null;
+            InputStream stream;
 
             try {
                 stream = new FileInputStream(p.getImageLocation());
@@ -72,9 +62,7 @@ public class ProductList {
             textPane.add(text, 0, 0);
             textPane.add(price, 0, 1);
             gp.add(textPane, 0, 1);
-            textPane.setOnMouseClicked(e->{
-                fetchDetails(tablePane, p);
-            });
+            textPane.setOnMouseClicked(e-> fetchDetails(tablePane, p));
             gp.setStyle("-fx-padding: 10;" +
                     "-fx-border-style: solid inside;" +
                     "-fx-border-width: 2;" +
@@ -87,12 +75,7 @@ public class ProductList {
             button.setPrefHeight(200);
             button.setPrefWidth(320);
             button.setStyle("-fx-background-color: transparent");
-            button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    fetchDetails(tablePane, p);
-                }
-            });
+            button.setOnAction(actionEvent -> fetchDetails(tablePane, p));
             gp.getChildren().add(button);
             tablePane.add(gp, i%3, i/3);
             i++;
@@ -128,10 +111,6 @@ public class ProductList {
 //        tablePane.setEffect(new DropShadow());
         return tablePane;
     }
-
-//    public Product getSelectedProduct(){
-//        return productTable.getSelectionModel().getSelectedItem();
-//    }
 
     private void fetchDetails(GridPane tablePane, Product p){
         tablePane.getChildren().clear();

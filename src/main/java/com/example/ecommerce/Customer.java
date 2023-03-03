@@ -13,9 +13,6 @@ public class Customer {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
     public String getName() {
         return name;
     }
@@ -37,16 +34,8 @@ public class Customer {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getMobile() {
         return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
     }
 
     public String getPassword() {
@@ -61,7 +50,4 @@ public class Customer {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
 }

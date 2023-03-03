@@ -1,14 +1,7 @@
 package com.example.ecommerce;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -16,22 +9,18 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.StageStyle;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ProductDetails {
-   private static Product product;
-   static int quantity;
-    public static TableView<Product> productTable;
+    static int quantity;
 
-   public static BorderPane getDetails(Product product, Customer loggedInCustomer){
-        ProductDetails.product = product;
-        quantity = 1;
+    public static BorderPane getDetails(Product product, Customer loggedInCustomer){
+       quantity = 1;
 
         BorderPane productDetails = new BorderPane();
         Text name = new Text(product.getName());
@@ -41,7 +30,7 @@ public class ProductDetails {
         Button buyButton = new Button("Buy Now");
         GridPane details = new GridPane();
 
-        InputStream stream = null;
+        InputStream stream;
 
         try {
             stream = new FileInputStream(product.getImageLocation());
@@ -69,23 +58,17 @@ public class ProductDetails {
         GridPane numberPane = new GridPane();
         Text number = new Text(String.valueOf(quantity));
 
-        decrementButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if(quantity > 0){
-                    quantity--;
-                    number.setText(String.valueOf(quantity));
-                }
+        decrementButton.setOnAction(actionEvent -> {
+            if(quantity > 1){
+                quantity--;
+                number.setText(String.valueOf(quantity));
             }
         });
 
-        incrementButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if(quantity < product.getQuantity()){
-                    quantity++;
-                    number.setText(String.valueOf(quantity));
-                }
+        incrementButton.setOnAction(actionEvent -> {
+            if(quantity < product.getQuantity()){
+                quantity++;
+                number.setText(String.valueOf(quantity));
             }
         });
 
@@ -114,8 +97,8 @@ public class ProductDetails {
         Text alertText = new Text();
         GridPane alertPane = new GridPane();
         alertPane.getChildren().add(alertText);
-        if(product.getQuantity() <= 50)
-            alertText.setText("Only " + String.valueOf(product.getQuantity()) + " in stock");
+        if(product.getQuantity() <= 50 & product.getQuantity() > 0)
+            alertText.setText("Only " + product.getQuantity() + " in stock");
         alertText.setFill(Color.RED);
         details.getChildren().add(alertPane);
         alertPane.setTranslateY(140);
@@ -125,50 +108,42 @@ public class ProductDetails {
         buttonPane.setHgap(30);
         details.setVgap(10);
 
-        ECommerce obj = new ECommerce();
-
-        buyButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if(product.getQuantity() == 0)
-                    ECommerce.showDialogue("OUT OF STOCK");
-                else {
-                    boolean orderStatus = false;
-                    if (loggedInCustomer != null && quantity > 0 && quantity <= product.getQuantity()) {
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        Date date = new Date();
-                        orderStatus = Order.placeOrder(loggedInCustomer, product, quantity, formatter.format(date));
-                    } else if (loggedInCustomer == null)
-                        obj.showDialogue("Please log in");
-                    else if (quantity == 0)
-                        ECommerce.showDialogue("quantity can not be 0");
-                    if (orderStatus) {
-                        obj.showDialogue("Order Successful");
-                        CustomerProfile customerProfile = new CustomerProfile();
-                        GridPane profilePane = customerProfile.getCustomerProfile(loggedInCustomer, ECommerce.welcomeLabel, "order");
-                        ECommerce.bodyPane.getChildren().clear();
-                        ECommerce.bodyPane.getChildren().add(profilePane);
-                        profilePane.prefHeightProperty().bind(ECommerce.bodyPane.heightProperty());
-                        profilePane.prefWidthProperty().bind(ECommerce.bodyPane.widthProperty());
-                    } else
-                        ECommerce.showDialogue("Order Failed");
-                }
+        buyButton.setOnAction(actionEvent -> {
+            if(product.getQuantity() == 0)
+                ECommerce.showDialogue("OUT OF STOCK");
+            else {
+                boolean orderStatus = false;
+                if (loggedInCustomer != null && quantity > 0 && quantity <= product.getQuantity()) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date date = new Date();
+                    orderStatus = Order.placeOrder(loggedInCustomer, product, quantity, formatter.format(date));
+                } else if (loggedInCustomer == null)
+                    ECommerce.showDialogue("Please log in");
+                else if (quantity == 0)
+                    ECommerce.showDialogue("quantity can not be 0");
+                if (orderStatus) {
+                    ECommerce.showDialogue("Order Successful");
+                    CustomerProfile customerProfile = new CustomerProfile();
+                    GridPane profilePane = customerProfile.getCustomerProfile(loggedInCustomer, ECommerce.welcomeLabel, "order");
+                    ECommerce.bodyPane.getChildren().clear();
+                    ECommerce.bodyPane.getChildren().add(profilePane);
+                    profilePane.prefHeightProperty().bind(ECommerce.bodyPane.heightProperty());
+                    profilePane.prefWidthProperty().bind(ECommerce.bodyPane.widthProperty());
+                } else
+                    ECommerce.showDialogue("Order Failed");
             }
         });
 
-        addToCartButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if(loggedInCustomer == null){
-                    ECommerce.showDialogue("Please Log in");
-                }
-                else{
-                   boolean cartStatus =  Cart.addToCart(loggedInCustomer, product, quantity);
-                   if(cartStatus)
-                       ECommerce.showDialogue("added to cart");
-                   else
-                       ECommerce.showDialogue("couldn't add to cart");
-                }
+        addToCartButton.setOnAction(actionEvent -> {
+            if(loggedInCustomer == null){
+                ECommerce.showDialogue("Please Log in");
+            }
+            else{
+               boolean cartStatus =  Cart.addToCart(loggedInCustomer, product, quantity);
+               if(cartStatus)
+                   ECommerce.showDialogue("added to cart");
+               else
+                   ECommerce.showDialogue("couldn't add to cart");
             }
         });
 

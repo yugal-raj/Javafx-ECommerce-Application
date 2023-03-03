@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.sql.ResultSet;
+import java.util.Objects;
 
 public class Login {
 
@@ -20,9 +21,8 @@ public class Login {
 
     static String getEncryptedPassword(String password){
         try{
-            BigInteger num = new BigInteger(1, getSha(password));
-            StringBuilder hexString = new StringBuilder(num.toString(16));
-            return hexString.toString();
+            BigInteger num = new BigInteger(1, Objects.requireNonNull(getSha(password)));
+            return num.toString(16);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -71,7 +71,7 @@ public class Login {
     public static void newCart(int customerId){
         try{
             /*CREATE TABLE `ecomm`.`cart2` (`cid` INT NOT NULL AUTO_INCREMENT,`productId` INT NOT NULL, `quantity` INT NOT NULL, PRIMARY KEY (`cid`));*/
-            String createCart = "CREATE TABLE `ecomm`.`cart" + String.valueOf(customerId) + "` (`cid` INT NOT NULL AUTO_INCREMENT,`productId` INT NOT NULL, `quantity` INT NOT NULL, PRIMARY KEY (`cid`))";
+            String createCart = "CREATE TABLE `ecomm`.`cart" + customerId + "` (`cid` INT NOT NULL AUTO_INCREMENT,`productId` INT NOT NULL, `quantity` INT NOT NULL, PRIMARY KEY (`cid`))";
             DatabaseConnection dbConn = new DatabaseConnection();
             dbConn.insertUpdateCreate(createCart);
         }
@@ -84,7 +84,7 @@ public class Login {
         //UPDATE `ecomm`.`customer` SET `password` = '2cf24dba5fb0a30e26e83b2ac5b9e29e1161e5c1fa7425e73043362938b9824' WHERE (`cid` = '3');
         try{
             String newEncryptedPass = getEncryptedPassword(password);
-            String createCart = "UPDATE `ecomm`.`customer` SET `password` = '" + newEncryptedPass + "' WHERE (`cid` = '" + String.valueOf(customerId) +"')";
+            String createCart = "UPDATE `ecomm`.`customer` SET `password` = '" + newEncryptedPass + "' WHERE (`cid` = '" + customerId +"')";
             DatabaseConnection dbConn = new DatabaseConnection();
             return dbConn.insertUpdateCreate(createCart);
         }
@@ -98,19 +98,15 @@ public class Login {
         //DELETE FROM `ecomm`.`customer` WHERE (`cid` = '1');
         //DROP TABLE `ecomm`.`cart1`
         try{
-            String deleteCustomer = "DELETE FROM `ecomm`.`customer` WHERE (`cid` = '" + String.valueOf(customerId) + "')";
-            String deleteCart = "DROP TABLE `ecomm`.`cart" + String.valueOf(customerId) + "`";
+            String deleteCustomer = "DELETE FROM `ecomm`.`customer` WHERE (`cid` = '" + customerId + "')";
+            String deleteCart = "DROP TABLE `ecomm`.`cart" + customerId + "`";
             DatabaseConnection dbConn = new DatabaseConnection();
             return dbConn.insertUpdateCreate(deleteCustomer) & dbConn.insertUpdateCreate(deleteCart);
         }
         catch (Exception e){
-            e.printStackTrace();;
+            e.printStackTrace();
         }
         return false;
     }
 
-/*    public static void main(String[] args) {
-        System.out.println(customerLogin("angad@gmail.com", "abc"));
-        System.out.println(getEncryptedPassword("hello"));
-    }*/
 }

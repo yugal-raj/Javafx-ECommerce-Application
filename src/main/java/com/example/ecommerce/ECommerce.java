@@ -1,42 +1,22 @@
 package com.example.ecommerce;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseDragEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
-
-//import java.awt.*;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.*;
-
 import static javafx.scene.text.FontPosture.REGULAR;
-import static javafx.scene.text.FontWeight.BLACK;
 import static javafx.scene.text.FontWeight.BOLD;
 
 public class ECommerce extends Application {
     static BorderPane root;
     private static Text pageNo;
-    private final int width = 1200, height = 650, headerLine = 50;
     ProductList productList = new ProductList();
 //    Product product = null;
     static GridPane bodyPane;
@@ -63,32 +43,25 @@ public class ECommerce extends Application {
         Button loginButton = new Button("Login");
         Label messageLabel = new Label("");
 
-        loginButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                String user = userName.getText();
-                String pass = password.getText();
-                loggedInCustomer = Login.customerLogin(user, pass);
-                if(loggedInCustomer != null) {
-                    welcomeLabel.setText("Welcome " + loggedInCustomer.getName());
-                    bodyPane.getChildren().clear();
-                    page = 1;
-                    bodyPane.getChildren().add(productList.getAllProducts(loggedInCustomer, "", page));
-                    root.setTop(headerBar());
-                    root.setBottom(footerBar());
-                }
-                else {
-                    showDialogue("Incorrect credentials");
-                }
+        loginButton.setOnAction(actionEvent -> {
+            String user = userName.getText();
+            String pass = password.getText();
+            loggedInCustomer = Login.customerLogin(user, pass);
+            if(loggedInCustomer != null) {
+                welcomeLabel.setText("Welcome " + loggedInCustomer.getName());
+                bodyPane.getChildren().clear();
+                page = 1;
+                bodyPane.getChildren().add(productList.getAllProducts(loggedInCustomer, "", page));
+                root.setTop(headerBar());
+                root.setBottom(footerBar());
+            }
+            else {
+                showDialogue("Incorrect credentials");
             }
         });
         GridPane loginBody = new GridPane();
         GridPane loginPane = new GridPane();
         loginPane.setStyle("-fx-background-color: BEIGE;");
-//        loginPane.setTranslateY(400);
-//        loginPane.setTranslateX(120);
-//        loginPane.setVgap(10);
-//        loginPane.setHgap(10);
         Text hello = new Text("Hello");
         hello.setStyle("-fx-font: normal bold 50px 'serif' ");
         hello.setTranslateX(80);
@@ -148,34 +121,28 @@ public class ECommerce extends Application {
         searchBar.setPrefWidth(500);
         Button searchButton = new Button("Search");
         header.setStyle("-fx-background-color: BLACK;");
-        searchButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                bodyPane.getChildren().clear();
-                search = searchBar.getText();
-                page = 1;
-                bodyPane.getChildren().addAll(productList.getAllProducts(loggedInCustomer, search, page));
+        searchButton.setOnAction(actionEvent -> {
+            bodyPane.getChildren().clear();
+            search = searchBar.getText();
+            page = 1;
+            bodyPane.getChildren().addAll(productList.getAllProducts(loggedInCustomer, search, page));
 //                bodyPane.setStyle("-fx-background-color: BEIGE;");
-                root.setBottom(footerBar());
-            }
+            root.setBottom(footerBar());
         });
         Text text = new Text("ECOMMERCE");
         Glow glow = new Glow();
 
         glow.setLevel(0.3);
         text.setFill(Color.WHITE);
-        text.setFont(Font.font("Abyssinica SIL",BOLD,REGULAR,20));
+        text.setFont(Font.font("Abyssinia SIL",BOLD,REGULAR,20));
         text.setEffect(glow);
         text.setStroke(Color.YELLOW);
         signInButton.setAlignment(Pos.TOP_RIGHT);
 
-        signInButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                bodyPane.getChildren().clear();
-                bodyPane.getChildren().add(loginPage());
-                root.setBottom(null);
-            }
+        signInButton.setOnAction(actionEvent -> {
+            bodyPane.getChildren().clear();
+            bodyPane.getChildren().add(loginPage());
+            root.setBottom(null);
         });
         GridPane searchPane = new GridPane();
         GridPane textPane = new GridPane();
@@ -207,36 +174,30 @@ public class ECommerce extends Application {
             customerPane.add(signOutButton, 1, 0);
         }
 
-        signOutButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                customerPane.getChildren().remove(signOutButton);
-                customerPane.add(signInButton, 1, 0);
-                loggedInCustomer = null;
-                welcomeLabel.setText("Welcome Customer");
-                bodyPane.getChildren().clear();
-                page = 1;
-                bodyPane.getChildren().add(productList.getAllProducts(loggedInCustomer, "", page));
-                root.setBottom(footerBar());
-            }
+        signOutButton.setOnAction(actionEvent -> {
+            customerPane.getChildren().remove(signOutButton);
+            customerPane.add(signInButton, 1, 0);
+            loggedInCustomer = null;
+            welcomeLabel.setText("Welcome Customer");
+            bodyPane.getChildren().clear();
+            page = 1;
+            bodyPane.getChildren().add(productList.getAllProducts(loggedInCustomer, "", page));
+            root.setBottom(footerBar());
         });
 
         CustomerProfile customerProfile = new CustomerProfile();
 
 
-        cartButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if(loggedInCustomer!=null){
-                    bodyPane.getChildren().clear();
-                    GridPane profilePane = customerProfile.getCustomerProfile(loggedInCustomer, welcomeLabel, "cart");
-                    bodyPane.getChildren().add(profilePane);
-                    profilePane.prefHeightProperty().bind(bodyPane.heightProperty());
-                    profilePane.prefWidthProperty().bind(bodyPane.widthProperty());
-                }
-                else
-                    showDialogue("Please log in");
+        cartButton.setOnAction(actionEvent -> {
+            if(loggedInCustomer!=null){
+                bodyPane.getChildren().clear();
+                GridPane profilePane = customerProfile.getCustomerProfile(loggedInCustomer, welcomeLabel, "cart");
+                bodyPane.getChildren().add(profilePane);
+                profilePane.prefHeightProperty().bind(bodyPane.heightProperty());
+                profilePane.prefWidthProperty().bind(bodyPane.widthProperty());
             }
+            else
+                showDialogue("Please log in");
         });
 
         header.setLeft(leftPane);
@@ -251,16 +212,13 @@ public class ECommerce extends Application {
         customerPane.setHgap(10);
         header.setPrefHeight(50);
 
-        welcomeLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if(loggedInCustomer != null){
-                    bodyPane.getChildren().clear();
-                    GridPane profilePane = customerProfile.getCustomerProfile(loggedInCustomer, welcomeLabel, "default");
-                    bodyPane.getChildren().add(profilePane);
-                    profilePane.prefHeightProperty().bind(bodyPane.heightProperty());
-                    profilePane.prefWidthProperty().bind(bodyPane.widthProperty());
-                }
+        welcomeLabel.setOnMouseClicked(mouseEvent -> {
+            if(loggedInCustomer != null){
+                bodyPane.getChildren().clear();
+                GridPane profilePane = customerProfile.getCustomerProfile(loggedInCustomer, welcomeLabel, "default");
+                bodyPane.getChildren().add(profilePane);
+                profilePane.prefHeightProperty().bind(bodyPane.heightProperty());
+                profilePane.prefWidthProperty().bind(bodyPane.widthProperty());
             }
         });
 
@@ -287,31 +245,25 @@ public class ECommerce extends Application {
         increment.setStyle("-fx-background-color: darkslateblue; -fx-text-fill: white;");
         GridPane footer = new GridPane();
 
-        decrement.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if(page > 1) {
+        decrement.setOnAction(actionEvent -> {
+            if(page > 1) {
+                page--;
+                bodyPane.getChildren().clear();
+                bodyPane.getChildren().add(productList.getAllProducts(loggedInCustomer, search, page));
+            }
+            pageNo.setText(String.valueOf(page));
+        });
+
+        increment.setOnAction(actionEvent -> {
+                page++;
+                bodyPane.getChildren().clear();
+                bodyPane.getChildren().add(productList.getAllProducts(loggedInCustomer, search, page));
+                if(totalPage == 0 && page != 1){
                     page--;
                     bodyPane.getChildren().clear();
                     bodyPane.getChildren().add(productList.getAllProducts(loggedInCustomer, search, page));
                 }
                 pageNo.setText(String.valueOf(page));
-            }
-        });
-
-        increment.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                    page++;
-                    bodyPane.getChildren().clear();
-                    bodyPane.getChildren().add(productList.getAllProducts(loggedInCustomer, search, page));
-                    if(totalPage == 0 && page != 1){
-                        page--;
-                        bodyPane.getChildren().clear();
-                        bodyPane.getChildren().add(productList.getAllProducts(loggedInCustomer, search, page));
-                    }
-                    pageNo.setText(String.valueOf(page));
-            }
         });
 
 
@@ -330,12 +282,10 @@ public class ECommerce extends Application {
         footer.setAlignment(Pos.CENTER);
         return footer;
     }
-
-    public Customer getLoggedInCustomer(){
-        return loggedInCustomer;
-    }
     private BorderPane createContent(){
         root = new BorderPane();
+        int height = 650;
+        int width = 1200;
         root.setPrefSize(width, height);
         bodyPane = new GridPane();
         bodyPane.setPrefSize(width, height);
@@ -352,9 +302,10 @@ public class ECommerce extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
-            Scene scene = new Scene(createContent());
-            stage.setTitle("ECommerce");
+    public void start(Stage stage) {
+        Scene scene;
+        scene = new Scene(createContent());
+        stage.setTitle("ECommerce");
             stage.setScene(scene);
             stage.show();
     }

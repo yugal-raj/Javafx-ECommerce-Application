@@ -1,20 +1,18 @@
 package com.example.ecommerce;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -22,49 +20,58 @@ public class CartList {
     public static TableView<Cart> cartTable;
     public static GridPane getAllCart(Customer loggedInCustomer, String cartStatus){
 
-        TableColumn pName = new TableColumn("Product Name");
-        pName.setCellValueFactory(new PropertyValueFactory<>("productName"));
-
-
-
-        ObservableList<Cart> data = FXCollections.observableArrayList();
-
-
         ObservableList<Cart> orderList = Cart.getAllCart(loggedInCustomer);
         cartTable = new TableView<>();
         cartTable.setItems(orderList);
-        cartTable.getColumns().add(pName);
 
 
         GridPane tablePane = new GridPane();
         int n = cartTable.getItems().size();
-        int quantity[] = new int[n];
+        int[] quantity = new int[n];
         for(int i = 0; i<cartTable.getItems().size(); i++){
             GridPane gp = new GridPane();
             Cart cart = cartTable.getItems().get(i);
 
             if(cartStatus.equals("buyAll")){
-                boolean orderStatus = false;
-                Product product = new Product();
-                product.setId(cart.getProductId());
-                product.setQuantity(cart.getProductQuantity());
+                ObservableList<Product> productQuantityList = Product.getProductDetails(cart.getProductId());
+                TableView<Product> productQuantityTable = new TableView<>();
+                productQuantityTable.setItems(productQuantityList);
+                Product product = productQuantityTable.getItems().get(0);
 //                ECommerce.showDialogue(String.valueOf(i+1));
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date date = new Date();
-                orderStatus = Order.placeOrder(loggedInCustomer, product, cart.getQuantity(), formatter.format(date));
-                if(orderStatus) {
-                    boolean removeStatus = false;
-                    removeStatus = Cart.remove(loggedInCustomer, cart.getCartId());
-                    if(removeStatus)
-                        ECommerce.showDialogue("Removed");
-                    else
-                        ECommerce.showDialogue("not removed");
-                }
-                else
+//                ECommerce.showDialogue("product name : "+ product.getName()+"\nproduct quantity " + product.getQuantity() + "\ncart product: " + cart.getProductName() + "\n cart quantity: " + cart.getQuantity());
+                if(product.getQuantity() == 0)
                     ECommerce.showDialogue(cart.getProductName() + " is Out of Stock");
+                if(product.getQuantity() > cart.getQuantity()){
+                    boolean orderStatus = Order.placeOrder(loggedInCustomer, product, cart.getQuantity(), formatter.format(date));
+                    if (orderStatus) {
+                        Cart.remove(loggedInCustomer, cart.getCartId());
+                    } else
+                        ECommerce.showDialogue("failed to order");
+                }
             }
             else {
                 quantity[i] = cart.getQuantity();
+
+                InputStream stream;
+
+                try {
+                    stream = new FileInputStream(cart.getImageLocation());
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+
+                Image image = new Image(stream);
+                //Creating the image view
+                ImageView imageView = new ImageView();
+                //Setting image to the image view
+                imageView.setImage(image);
+                imageView.setFitHeight(60);
+                imageView.setFitWidth(70);
+                GridPane imagePane = new GridPane();
+                imagePane.getChildren().add(imageView);
+
                 Text productId = new Text(String.valueOf(cart.getProductName()));
                 Text productQuantity = new Text(String.valueOf(quantity[i]));
                 Text productPrice = new Text(String.valueOf(cart.getPrice() * quantity[i]));
@@ -86,70 +93,21 @@ public class CartList {
                 int finalI = i;
 
                 Button updateButton = new Button("Update");
-                updateButton.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        if(quantity[finalI] == 0){
-                            Cart.remove(loggedInCustomer, cart.getCartId());
-                            CustomerProfile customerProfile = new CustomerProfile();
-                            GridPane cartPane = customerProfile.getCustomerProfile(loggedInCustomer, ECommerce.welcomeLabel, "cart");
-                            ECommerce.bodyPane.getChildren().clear();
-                            ECommerce.bodyPane.getChildren().add(cartPane);
-                            cartPane.prefHeightProperty().bind(ECommerce.bodyPane.heightProperty());
-                            cartPane.prefWidthProperty().bind(ECommerce.bodyPane.widthProperty());
-                        }
-                        else {
-                            boolean updateStatus = false;
-                            updateStatus = Cart.updateCart(loggedInCustomer, cart.getProductId(), quantity[finalI]);
-                            if (updateStatus) {
-                                ECommerce.showDialogue("Updated");
-                                CustomerProfile customerProfile = new CustomerProfile();
-                                GridPane cartPane = customerProfile.getCustomerProfile(loggedInCustomer, ECommerce.welcomeLabel, "cart");
-                                ECommerce.bodyPane.getChildren().clear();
-                                ECommerce.bodyPane.getChildren().add(cartPane);
-                                cartPane.prefHeightProperty().bind(ECommerce.bodyPane.heightProperty());
-                                cartPane.prefWidthProperty().bind(ECommerce.bodyPane.widthProperty());
-                            } else
-                                ECommerce.showDialogue("Not updated");
-                        }
+                updateButton.setOnAction(actionEvent -> {
+                    if(quantity[finalI] == 0){
+                        Cart.remove(loggedInCustomer, cart.getCartId());
+                        CustomerProfile customerProfile = new CustomerProfile();
+                        GridPane cartPane = customerProfile.getCustomerProfile(loggedInCustomer, ECommerce.welcomeLabel, "cart");
+                        ECommerce.bodyPane.getChildren().clear();
+                        ECommerce.bodyPane.getChildren().add(cartPane);
+                        cartPane.prefHeightProperty().bind(ECommerce.bodyPane.heightProperty());
+                        cartPane.prefWidthProperty().bind(ECommerce.bodyPane.widthProperty());
                     }
-                });
-
-                incrementButton.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        if (quantity[finalI] < cart.getProductQuantity()) {
-                            quantity[finalI]++;
-                            productQuantity.setText(String.valueOf(quantity[finalI]));
-                            productPrice.setText(String.valueOf(quantity[finalI] * cart.getPrice()));
-                            gp.getChildren().remove(updateButton);
-                            gp.add(updateButton, 4, 0);
-                        }
-                    }
-                });
-                decrementButton.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        if (quantity[finalI] > 0) {
-                            quantity[finalI]--;
-                            productQuantity.setText(String.valueOf(quantity[finalI]));
-                            productPrice.setText(String.valueOf(quantity[finalI] * cart.getPrice()));
-                            gp.getChildren().remove(updateButton);
-                            gp.add(updateButton, 4, 0);
-                        }
-                    }
-                });
-
-                GridPane pricePane = new GridPane();
-                pricePane.getChildren().add(productPrice);
-
-                Button removeButton = new Button("Remove");
-                removeButton.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        boolean removeStatus = false;
-                        removeStatus = Cart.remove(loggedInCustomer, cart.getCartId());
-                        if (removeStatus) {
+                    else {
+                        boolean updateStatus;
+                        updateStatus = Cart.updateCart(loggedInCustomer, cart.getProductId(), quantity[finalI]);
+                        if (updateStatus) {
+                            ECommerce.showDialogue("Updated");
                             CustomerProfile customerProfile = new CustomerProfile();
                             GridPane cartPane = customerProfile.getCustomerProfile(loggedInCustomer, ECommerce.welcomeLabel, "cart");
                             ECommerce.bodyPane.getChildren().clear();
@@ -157,15 +115,54 @@ public class CartList {
                             cartPane.prefHeightProperty().bind(ECommerce.bodyPane.heightProperty());
                             cartPane.prefWidthProperty().bind(ECommerce.bodyPane.widthProperty());
                         } else
-                            ECommerce.showDialogue("failed to remove");
+                            ECommerce.showDialogue("Not updated");
                     }
                 });
 
-                gp.add(namePane, 0, 0);
-                gp.add(quantityPane, 1, 0);
-                gp.add(pricePane, 2, 0);
-                gp.add(removeButton, 3, 0);
-//                gp.add(updateButton, 4, 0);
+                incrementButton.setOnAction(actionEvent -> {
+                    if (quantity[finalI] < cart.getProductQuantity()) {
+                        quantity[finalI]++;
+                        productQuantity.setText(String.valueOf(quantity[finalI]));
+                        productPrice.setText(String.valueOf(quantity[finalI] * cart.getPrice()));
+                        gp.getChildren().remove(updateButton);
+                        gp.add(updateButton, 5, 0);
+                    }
+                });
+                decrementButton.setOnAction(actionEvent -> {
+                    if (quantity[finalI] > 0) {
+                        quantity[finalI]--;
+                        productQuantity.setText(String.valueOf(quantity[finalI]));
+                        productPrice.setText(String.valueOf(quantity[finalI] * cart.getPrice()));
+                        gp.getChildren().remove(updateButton);
+                        gp.add(updateButton, 5, 0);
+                    }
+                });
+
+                GridPane pricePane = new GridPane();
+                pricePane.getChildren().add(productPrice);
+
+                Button removeButton = new Button("Remove");
+                removeButton.setOnAction(actionEvent -> {
+                    boolean removeStatus;
+                    removeStatus = Cart.remove(loggedInCustomer, cart.getCartId());
+                    if (removeStatus) {
+                        CustomerProfile customerProfile = new CustomerProfile();
+                        GridPane cartPane = customerProfile.getCustomerProfile(loggedInCustomer, ECommerce.welcomeLabel, "cart");
+                        ECommerce.bodyPane.getChildren().clear();
+                        ECommerce.bodyPane.getChildren().add(cartPane);
+                        cartPane.prefHeightProperty().bind(ECommerce.bodyPane.heightProperty());
+                        cartPane.prefWidthProperty().bind(ECommerce.bodyPane.widthProperty());
+                    } else
+                        ECommerce.showDialogue("failed to remove");
+                });
+
+                gp.add(imagePane, 0, 0);
+                gp.add(namePane, 1, 0);
+                gp.add(quantityPane, 2, 0);
+                gp.add(pricePane, 3, 0);
+                gp.add(removeButton, 4, 0);
+                gp.setHgap(10);
+//                gp.add(updateButton, 5, 0);
                 gp.setStyle("-fx-padding: 10;" +
                         "-fx-border-style: solid inside;" +
                         "-fx-border-width: 2;" +
@@ -182,15 +179,18 @@ public class CartList {
                 gp.setPrefWidth(2000);
                 gp.setPrefHeight(70);
                 GridPane alertPane = new GridPane();
-                Text t = new Text();
+                Text quantityAlertText = new Text();
                 if(cart.getProductQuantity() <= 50){
-                    t.setText("Only " + String.valueOf(cart.getProductQuantity()) + " in stock");
+                    quantityAlertText.setText("Only " + cart.getProductQuantity() + " in stock");
                 }
-                t.setFill(Color.RED);
-                t.setFont(Font.font(10));
-                alertPane.getChildren().add(t);
-                alertPane.setTranslateX(400);
-                alertPane.setTranslateY(27);
+                if(cart.getProductQuantity() == 0){
+                    quantityAlertText.setText("Out of Stock");
+                }
+                quantityAlertText.setFill(Color.RED);
+                quantityAlertText.setFont(Font.font(10));
+                alertPane.getChildren().add(quantityAlertText);
+                alertPane.setTranslateX(420);
+                alertPane.setTranslateY(40);
                 alertPane.setPrefWidth(50);
                 gp.getChildren().add(alertPane);
                 tablePane.add(gp, 0, i);
@@ -208,42 +208,36 @@ public class CartList {
 //        tablePane.getChildren().add(cartTable);
         tablePane.setPrefWidth(2000);
         ScrollPane scroll = new ScrollPane();
-        scroll.setTranslateX(200);
-        scroll.setTranslateY(150);
-        scroll.setPrefSize(600, 200);
+        scroll.setTranslateX(150);
+        scroll.setTranslateY(100);
+        scroll.setPrefSize(700, 300);
         scroll.setFitToWidth(true);
         scroll.setContent(tablePane);
         GridPane finalPane = new GridPane();
         finalPane.add(scroll, 0, 0);
         Button removeAllButton = new Button("Remove All");
         Button buyAllButton = new Button("Buy All");
-        finalPane.add(removeAllButton, 1, 0);
-        finalPane.add(buyAllButton, 2, 0);
-        removeAllButton.setTranslateY(400);
-        buyAllButton.setTranslateY(400);
+        GridPane buttonPane = new GridPane();
+        buttonPane.add(removeAllButton, 0, 0);
+        buttonPane.add(buyAllButton, 1, 0);
+        finalPane.add(buttonPane, 1, 0);
+        buttonPane.setHgap(20);
+        buttonPane.setTranslateY(430);
 
-        removeAllButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                boolean removeStatus = false;
-                removeStatus = Cart.removeAll(loggedInCustomer);
-                if(removeStatus) {
-                    CustomerProfile customerProfile = new CustomerProfile();
-                    GridPane cartPane = customerProfile.getCustomerProfile(loggedInCustomer, ECommerce.welcomeLabel, "cart");
-                    ECommerce.bodyPane.getChildren().clear();
-                    ECommerce.bodyPane.getChildren().add(cartPane);
-                    cartPane.prefHeightProperty().bind(ECommerce.bodyPane.heightProperty());
-                    cartPane.prefWidthProperty().bind(ECommerce.bodyPane.widthProperty());
-                }
+        removeAllButton.setOnAction(actionEvent -> {
+            boolean removeStatus;
+            removeStatus = Cart.removeAll(loggedInCustomer);
+            if(removeStatus) {
+                CustomerProfile customerProfile = new CustomerProfile();
+                GridPane cartPane = customerProfile.getCustomerProfile(loggedInCustomer, ECommerce.welcomeLabel, "cart");
+                ECommerce.bodyPane.getChildren().clear();
+                ECommerce.bodyPane.getChildren().add(cartPane);
+                cartPane.prefHeightProperty().bind(ECommerce.bodyPane.heightProperty());
+                cartPane.prefWidthProperty().bind(ECommerce.bodyPane.widthProperty());
             }
         });
 
-        buyAllButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                getAllCart(loggedInCustomer, "buyAll");
-            }
-        });
+        buyAllButton.setOnAction(actionEvent -> getAllCart(loggedInCustomer, "buyAll"));
 
         return finalPane;
     }

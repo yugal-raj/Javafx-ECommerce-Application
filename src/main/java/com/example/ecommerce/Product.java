@@ -5,25 +5,16 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
 
 import java.sql.ResultSet;
 
 public class Product {
 
-    private SimpleIntegerProperty id;
+    private final SimpleIntegerProperty id;
     private SimpleStringProperty name;
     private SimpleDoubleProperty price;
     private SimpleStringProperty imageLocation;
-    private SimpleIntegerProperty quantity;
-
-    public void setId(int id) {
-        this.id.set(id);
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity.set(quantity);
-    }
+    private final SimpleIntegerProperty quantity;
 
     public int getId(){
         return id.get();
@@ -58,7 +49,7 @@ public class Product {
     }
 
     public static ObservableList<Product> getAllProducts(String searchText, int page){
-        String searchQuery = "select * from products where name like '%" + searchText +"%' limit " + String.valueOf((page-1)*6) + ", 6";
+        String searchQuery = "select * from products where name like '%" + searchText +"%' limit " + (page - 1) * 6 + ", 6";
         ObservableList<Product> list = getProducts(searchQuery);
         ECommerce.getPage(list.size());
         return list;
@@ -82,10 +73,15 @@ public class Product {
                 }
             }
         }
-
         catch (Exception e){
-            e.printStackTrace();;
+            e.printStackTrace();
         }
         return result;
+    }
+
+    public static ObservableList<Product> getProductDetails(int productId){
+        //SELECT quantity FROM ecomm.products where pid = 4;
+        String query = "SELECT * FROM ecomm.products where pid = " + productId + "";
+        return getProducts(query);
     }
 }

@@ -21,6 +21,7 @@ public class DatabaseConnection {
     public ResultSet getQueryTable(String query){
         Statement statement = getStatement();
         try {
+            assert statement != null;
             return statement.executeQuery(query);
         }
         catch (SQLException e){

@@ -1,13 +1,9 @@
 package com.example.ecommerce;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -29,12 +25,7 @@ public class NewCustomer {
         signUpPane.add(nameField, 1, 1);
         nameField.setTranslateX(-80);
         firstNameLabel.setTranslateX(70);
-        nameField.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                nameField.setStyle("-fx-border-color: transparent");
-            }
-        });
+        nameField.setOnMouseClicked(mouseEvent -> nameField.setStyle("-fx-border-color: transparent"));
 
         Label lastNameLabel = new Label("Last Name");
         signUpPane.add(lastNameLabel, 0, 2);
@@ -43,12 +34,7 @@ public class NewCustomer {
         signUpPane.add(lastNameField, 1, 2);
         lastNameField.setTranslateX(-80);
         lastNameLabel.setTranslateX(70);
-        lastNameField.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                lastNameField.setStyle("-fx-border-color: transparent");
-            }
-        });
+        lastNameField.setOnMouseClicked(mouseEvent -> lastNameField.setStyle("-fx-border-color: transparent"));
 
         Label emailLabel = new Label("Email");
         signUpPane.add(emailLabel, 0, 3);
@@ -57,12 +43,7 @@ public class NewCustomer {
         signUpPane.add(emailField, 1, 3);
         emailField.setTranslateX(-80);
         emailLabel.setTranslateX(70);
-        emailField.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                emailField.setStyle("-fx-border-color: transparent");
-            }
-        });
+        emailField.setOnMouseClicked(mouseEvent -> emailField.setStyle("-fx-border-color: transparent"));
 
 
         Label addressLabel = new Label("Address");
@@ -72,12 +53,7 @@ public class NewCustomer {
         signUpPane.add(addressField, 1, 4);
         addressField.setTranslateX(-80);
         addressLabel.setTranslateX(70);
-        addressField.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                addressField.setStyle("-fx-border-color: transparent");
-            }
-        });
+        addressField.setOnMouseClicked(mouseEvent -> addressField.setStyle("-fx-border-color: transparent"));
 
         Label mobileLabel = new Label("Mobile");
         signUpPane.add(mobileLabel, 0, 5);
@@ -86,12 +62,7 @@ public class NewCustomer {
         signUpPane.add(mobileField, 1, 5);
         mobileField.setTranslateX(-80);
         mobileLabel.setTranslateX(70);
-        mobileField.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                mobileField.setStyle("-fx-border-color: transparent");
-            }
-        });
+        mobileField.setOnMouseClicked(mouseEvent -> mobileField.setStyle("-fx-border-color: transparent"));
 
         Label messageLabel = new Label();
         signUpPane.add(messageLabel, 0, 9);
@@ -109,19 +80,13 @@ public class NewCustomer {
         passwordField.setTranslateX(-80);
         rePasswordField.setTranslateX(-80);
         passwordLabel.setTranslateX(70);
-        passwordField.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                passwordField.setStyle("-fx-border-color: transparent");
-                messageLabel.setText(null);
-            }
+        passwordField.setOnMouseClicked(mouseEvent -> {
+            passwordField.setStyle("-fx-border-color: transparent");
+            messageLabel.setText(null);
         });
-        rePasswordField.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                rePasswordField.setStyle("-fx-border-color: transparent");
-                messageLabel.setText(null);
-            }
+        rePasswordField.setOnMouseClicked(mouseEvent -> {
+            rePasswordField.setStyle("-fx-border-color: transparent");
+            messageLabel.setText(null);
         });
 
         Button registerButton = new Button("Register");
@@ -133,72 +98,70 @@ public class NewCustomer {
 
 //        messageLabel.setTextFill(Color.RED);
 
-        registerButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                String firstName = "", lastName, address, email, mobile, password, rePassword;
-                firstName = nameField.getText();
-                lastName = lastNameField.getText();
-                address = addressField.getText();
-                email = emailField.getText();
-                mobile = mobileField.getText();
-                password = passwordField.getText();
-                rePassword = rePasswordField.getText();
-                boolean complete = true;
-                if(nameField.getText().isEmpty()) {
-                    nameField.setStyle("-fx-border-color: red");
+        registerButton.setOnAction(actionEvent -> {
+            String firstName, lastName, address, email, mobile, password, rePassword;
+            firstName = nameField.getText();
+            lastName = lastNameField.getText();
+            address = addressField.getText();
+            email = emailField.getText();
+            mobile = mobileField.getText();
+            password = passwordField.getText();
+            rePassword = rePasswordField.getText();
+            boolean complete = true;
+            if(nameField.getText().isEmpty()) {
+                nameField.setStyle("-fx-border-color: red");
+                complete = false;
+            }
+            else if(lastNameField.getText().isEmpty()) {
+                lastNameField.setStyle("-fx-border-color: red");
+                complete = false;
+            }
+            else if(emailField.getText().isEmpty()) {
+                emailField.setStyle("-fx-border-color: red");
+                complete = false;
+            }
+            else if(addressField.getText().isEmpty()) {
+                addressField.setStyle("-fx-border-color: red");
+                complete = false;
+            }
+            else if(mobileField.getText().isEmpty()) {
+                mobileField.setStyle("-fx-border-color: red");
+                complete = false;
+            }
+            else if(passwordField.getText().isEmpty()) {
+                passwordField.setStyle("-fx-border-color: red");
+                complete = false;
+            }
+            else if(rePasswordField.getText().isEmpty()) {
+                rePasswordField.setStyle("-fx-border-color: red");
+                complete = false;
+            }
+            else if(!passwordField.getText().isEmpty() && !rePasswordField.getText().isEmpty()) {
+                if(!password.equals(rePassword)) {
+                    messageLabel.setText("Passwords do not match");
+                    messageLabel.setTextFill(Color.RED);
                     complete = false;
                 }
-                else if(lastNameField.getText().isEmpty()) {
-                    lastNameField.setStyle("-fx-border-color: red");
-                    complete = false;
+            }
+            if(complete){
+                boolean registerStatus = Login.newCustomerLogin(firstName+" "+lastName, email, address, mobile, password);
+                if(registerStatus) {
+                    Customer customer = Login.customerLogin(email, password);
+                    ProductList productList = new ProductList();
+                    ECommerce eCommerce = new ECommerce();
+                    //CREATE TABLE `ecomm`.`cart2` (`cid` INT NOT NULL AUTO_INCREMENT,`productId` INT NOT NULL, `quantity` INT NOT NULL, PRIMARY KEY (`cid`))
+                    assert customer != null;
+                    Login.newCart(customer.getId());
+                    ECommerce.welcomeLabel.setText("Welcome " + customer.getName());
+                    ECommerce.bodyPane.getChildren().clear();
+                    ECommerce.page = 1;
+                    ECommerce.loggedInCustomer = customer;
+                    ECommerce.bodyPane.getChildren().add(productList.getAllProducts(customer, "", ECommerce.page));
+                    ECommerce.root.setTop(eCommerce.headerBar());
+                    ECommerce.root.setBottom(eCommerce.footerBar());
                 }
-                else if(emailField.getText().isEmpty()) {
-                    emailField.setStyle("-fx-border-color: red");
-                    complete = false;
-                }
-                else if(addressField.getText().isEmpty()) {
-                    addressField.setStyle("-fx-border-color: red");
-                    complete = false;
-                }
-                else if(mobileField.getText().isEmpty()) {
-                    mobileField.setStyle("-fx-border-color: red");
-                    complete = false;
-                }
-                else if(passwordField.getText().isEmpty()) {
-                    passwordField.setStyle("-fx-border-color: red");
-                    complete = false;
-                }
-                else if(rePasswordField.getText().isEmpty()) {
-                    rePasswordField.setStyle("-fx-border-color: red");
-                    complete = false;
-                }
-                else if(!passwordField.getText().isEmpty() && !rePasswordField.getText().isEmpty()) {
-                    if(!password.equals(rePassword)) {
-                        messageLabel.setText("Passwords do not match");
-                        messageLabel.setTextFill(Color.RED);
-                        complete = false;
-                    }
-                }
-                if(complete){
-                    boolean registerStatus = Login.newCustomerLogin(firstName+" "+lastName, email, address, mobile, password);
-                    if(registerStatus) {
-                        Customer customer = Login.customerLogin(email, password);
-                        ProductList productList = new ProductList();
-                        ECommerce eCommerce = new ECommerce();
-                        //CREATE TABLE `ecomm`.`cart2` (`cid` INT NOT NULL AUTO_INCREMENT,`productId` INT NOT NULL, `quantity` INT NOT NULL, PRIMARY KEY (`cid`))
-                        Login.newCart(customer.getId());
-                        ECommerce.welcomeLabel.setText("Welcome " + customer.getName());
-                        ECommerce.bodyPane.getChildren().clear();
-                        ECommerce.page = 1;
-                        ECommerce.loggedInCustomer = customer;
-                        ECommerce.bodyPane.getChildren().add(productList.getAllProducts(customer, "", ECommerce.page));
-                        ECommerce.root.setTop(eCommerce.headerBar());
-                        ECommerce.root.setBottom(eCommerce.footerBar());
-                    }
-                    else
-                        ECommerce.showDialogue("Registration Failed\nEmail or Mobile linked to another account");
-                }
+                else
+                    ECommerce.showDialogue("Registration Failed\nEmail or Mobile linked to another account");
             }
         });
 
