@@ -36,6 +36,8 @@ public class ProductDetails {
         BorderPane productDetails = new BorderPane();
         Text name = new Text(product.getName());
         Text price = new Text(String.valueOf(product.getPrice()));
+        name.setFont(Font.font(20));
+        price.setFont(Font.font(16));
         Button buyButton = new Button("Buy Now");
         GridPane details = new GridPane();
 
@@ -108,6 +110,16 @@ public class ProductDetails {
         details.add(price, 0, 1);
         details.add(quantityPane, 0, 2);
         details.add(buttonPane, 0, 3);
+
+        Text alertText = new Text();
+        GridPane alertPane = new GridPane();
+        alertPane.getChildren().add(alertText);
+        if(product.getQuantity() <= 50)
+            alertText.setText("Only " + String.valueOf(product.getQuantity()) + " in stock");
+        alertText.setFill(Color.RED);
+        details.getChildren().add(alertPane);
+        alertPane.setTranslateY(140);
+
         quantityPane.setTranslateY(40);
         buttonPane.setTranslateY(90);
         buttonPane.setHgap(30);
@@ -159,7 +171,6 @@ public class ProductDetails {
                 }
             }
         });
-
 
 
 

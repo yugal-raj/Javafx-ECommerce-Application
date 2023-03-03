@@ -318,12 +318,16 @@ public class ECommerce extends Application {
         pageNo.setText(String.valueOf(page));
 
 //        footer.setTranslateY(headerLine + height);
-        footer.add(decrement, 0, 0);
-        footer.add(pageNo,1,0);
-        footer.add(increment, 2,0);
-        footer.setPrefHeight(50);
+        GridPane pagePane = new GridPane();
+
+        pagePane.add(decrement, 0, 0);
+        pagePane.add(pageNo,1,0);
+        pagePane.add(increment, 2,0);
+        footer.getChildren().add(pagePane);
+        pagePane.setTranslateY(10);
+        pagePane.setHgap(10);
+        footer.setPrefHeight(60);
         footer.setAlignment(Pos.CENTER);
-        footer.setHgap(10);
         return footer;
     }
 

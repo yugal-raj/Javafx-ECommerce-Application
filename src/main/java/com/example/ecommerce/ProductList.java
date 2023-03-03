@@ -63,16 +63,18 @@ public class ProductList {
             imageView.setFitHeight(160);
             imageView.setFitWidth(250);
             Text text = new Text(p.getName());
-            text.setOnMouseClicked(e->{
-               fetchDetails(tablePane, p);
-            });
+            Text price = new Text(String.valueOf(p.getPrice()));
             GridPane imagePane = new GridPane();
             imagePane.getChildren().add(imageView);
             gp.add(imagePane, 0, 0);
             imagePane.setAlignment(Pos.CENTER);
             GridPane textPane = new GridPane();
-            textPane.getChildren().add(text);
+            textPane.add(text, 0, 0);
+            textPane.add(price, 0, 1);
             gp.add(textPane, 0, 1);
+            textPane.setOnMouseClicked(e->{
+                fetchDetails(tablePane, p);
+            });
             gp.setStyle("-fx-padding: 10;" +
                     "-fx-border-style: solid inside;" +
                     "-fx-border-width: 2;" +
