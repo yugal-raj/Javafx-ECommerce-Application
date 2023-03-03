@@ -17,13 +17,13 @@ import static javafx.scene.text.FontWeight.BOLD;
 public class ECommerce extends Application {
     static BorderPane root;
     private static Text pageNo;
-    ProductList productList = new ProductList();
+    static ProductList productList = new ProductList();
 //    Product product = null;
     static GridPane bodyPane;
     private static int totalPage;
     public static int page = 1;
-    private String search;
-    Button signInButton = new Button("Log In");
+    private static String search;
+    static Button signInButton = new Button("Log In");
     static Label welcomeLabel = new Label("Welcome Customer");
 
 
@@ -32,7 +32,7 @@ public class ECommerce extends Application {
         totalPage = (int) Math.ceil(pages/6.0);
     }
 
-    private GridPane loginPage(){
+    static GridPane loginPage(){
         Label userLabel = new Label("User Name");
         Label passLabel = new Label("Password");
 //        userLabel.setStyle("-fx-font: normal bold 20px 'serif' ");
@@ -114,7 +114,7 @@ public class ECommerce extends Application {
         loginPane.setStyle("-fx-background-color: white");
         return loginBody;
     }
-    BorderPane headerBar(){
+    static BorderPane headerBar(){
         BorderPane header = new BorderPane();
 
         TextField searchBar = new TextField();
@@ -129,14 +129,21 @@ public class ECommerce extends Application {
 //                bodyPane.setStyle("-fx-background-color: BEIGE;");
             root.setBottom(footerBar());
         });
-        Text text = new Text("ECOMMERCE");
+        Text applicationNameText = new Text("ECOMMERCE");
         Glow glow = new Glow();
 
+        applicationNameText.setOnMouseClicked(mouseEvent -> {
+            bodyPane.getChildren().clear();
+            page = 1;
+            bodyPane.getChildren().add(productList.getAllProducts(loggedInCustomer, "", page));
+            root.setBottom(footerBar());
+        });
+
         glow.setLevel(0.3);
-        text.setFill(Color.WHITE);
-        text.setFont(Font.font("Abyssinia SIL",BOLD,REGULAR,20));
-        text.setEffect(glow);
-        text.setStroke(Color.YELLOW);
+        applicationNameText.setFill(Color.WHITE);
+        applicationNameText.setFont(Font.font("Abyssinia SIL",BOLD,REGULAR,20));
+        applicationNameText.setEffect(glow);
+        applicationNameText.setStroke(Color.YELLOW);
         signInButton.setAlignment(Pos.TOP_RIGHT);
 
         signInButton.setOnAction(actionEvent -> {
@@ -146,7 +153,7 @@ public class ECommerce extends Application {
         });
         GridPane searchPane = new GridPane();
         GridPane textPane = new GridPane();
-        textPane.add(text, 0, 0);
+        textPane.add(applicationNameText, 0, 0);
         searchPane.add(searchBar, 0, 0);
         searchPane.add(searchButton, 1, 0);
 
@@ -237,7 +244,7 @@ public class ECommerce extends Application {
         dialog.getDialogPane().getButtonTypes().add(type);
         dialog.showAndWait();
     }
-    GridPane footerBar(){
+    static GridPane footerBar(){
         Button decrement = new Button("<");
         Button increment = new Button(">");
 

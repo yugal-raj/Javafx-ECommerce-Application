@@ -29,7 +29,6 @@ public class ProductList {
         ObservableList<Product> productList = Product.getAllProducts(searchText, page);
         productTable = new TableView<>();
         productTable.setItems(productList);
-        productTable.getColumns().add(id);
 
 
         GridPane tablePane = new GridPane();

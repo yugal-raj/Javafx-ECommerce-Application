@@ -8,6 +8,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
+import static javafx.application.Application.launch;
+
 public class NewCustomer {
     public static GridPane getSignUpPane(){
         GridPane signUpPane = new GridPane();
@@ -147,8 +149,6 @@ public class NewCustomer {
                 boolean registerStatus = Login.newCustomerLogin(firstName+" "+lastName, email, address, mobile, password);
                 if(registerStatus) {
                     Customer customer = Login.customerLogin(email, password);
-                    ProductList productList = new ProductList();
-                    ECommerce eCommerce = new ECommerce();
                     //CREATE TABLE `ecomm`.`cart2` (`cid` INT NOT NULL AUTO_INCREMENT,`productId` INT NOT NULL, `quantity` INT NOT NULL, PRIMARY KEY (`cid`))
                     assert customer != null;
                     Login.newCart(customer.getId());
@@ -156,14 +156,31 @@ public class NewCustomer {
                     ECommerce.bodyPane.getChildren().clear();
                     ECommerce.page = 1;
                     ECommerce.loggedInCustomer = customer;
-                    ECommerce.bodyPane.getChildren().add(productList.getAllProducts(customer, "", ECommerce.page));
-                    ECommerce.root.setTop(eCommerce.headerBar());
-                    ECommerce.root.setBottom(eCommerce.footerBar());
+                    ECommerce.bodyPane.getChildren().add(ECommerce.productList.getAllProducts(ECommerce.loggedInCustomer, "", ECommerce.page));
+                    ECommerce.root.setTop(ECommerce.headerBar());
+                    ECommerce.root.setBottom(ECommerce.footerBar());
                 }
                 else
                     ECommerce.showDialogue("Registration Failed\nEmail or Mobile linked to another account");
             }
         });
+
+        GridPane registeredUserPane = new GridPane();
+        Text registeredUserMessage = new Text("Already have an account?");
+        Text logInText = new Text("Log in");
+
+        logInText.setOnMouseClicked(e->{
+            ECommerce.bodyPane.getChildren().clear();
+            ECommerce.bodyPane.getChildren().add(ECommerce.loginPage());
+        });
+
+        logInText.setFill(Color.BLUE);
+        registeredUserPane.add(registeredUserMessage, 0, 0);
+        registeredUserPane.add(logInText, 1, 0);
+        signUpPane.add(registeredUserPane, 0, 9);
+        registeredUserPane.setHgap(10);
+        registeredUserPane.setTranslateY(30);
+        registeredUserPane.setTranslateX(120);
 
 
         signUpPane.setVgap(5);
