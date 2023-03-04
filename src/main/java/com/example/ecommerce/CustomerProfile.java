@@ -347,7 +347,7 @@ public class CustomerProfile {
                     privacyGridPane.setTranslateX(400);
                 }
                 else
-                    ECommerce.showDialogue("Failed to Delete");
+                    ECommerce.showDialogue("Failed to Delete. \nPlease contact customer care.");
             }
         });
 
