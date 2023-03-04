@@ -28,8 +28,8 @@ public class ECommerce extends Application {
 
 
     static Customer loggedInCustomer = null;
-    static void getPage(int pages){
-        totalPage = (int) Math.ceil(pages/6.0);
+    static void getPage(int listSize){
+        totalPage = (int) Math.ceil(listSize/6.0);
     }
 
     static GridPane loginPage(){
